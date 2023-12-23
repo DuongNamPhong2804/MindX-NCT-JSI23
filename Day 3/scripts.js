@@ -8,7 +8,7 @@ fetch("https://jsonplaceholder.typicode.com/photos")
     }
   });
 
-
+  
 function renderData(data) {
   let div = document.createElement("div");
   div.classList.add("card");
