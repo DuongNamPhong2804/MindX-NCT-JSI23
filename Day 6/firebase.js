@@ -34,5 +34,8 @@ add_user_btn.addEventListener("click", function() {
 })
 
 read_data.addEventListener("click", function() {
-  onValue(ref(database, "users/"), {})
+  onValue(ref(database, "users/"), (snap) => {
+    let data = snap.val();
+    console.log(data);
+  })
 })
