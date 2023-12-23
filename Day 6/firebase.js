@@ -22,6 +22,7 @@ const database = getDatabase();
 
 let username_input = document.getElementById("user_name");
 let userage_input = document.getElementById("user_age");
+let user_favor_input = document.getElementById("user_favor");
 let add_user_btn = document.getElementById("add_user");
 let read_data = document.getElementById("read_data");
 
