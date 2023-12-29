@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, set, ref, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import { getDatabase, set, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,18 +25,25 @@ let userage_input = document.getElementById("user_age");
 let user_favor_input = document.getElementById("user_favor");
 let add_user_btn = document.getElementById("add_user");
 let read_data = document.getElementById("read_data");
+let update_btn = document.getElementById("update");
 
 add_user_btn.addEventListener("click", function() {
   set(ref(database, "users/" + username_input.value), {
     username: userage_input.value,
     userage: userage_input.value,
-  })
+  });
 
-})
+});
 
 read_data.addEventListener("click", function() {
   onValue(ref(database, "users/"), (snap) => {
     let data = snap.val();
     console.log(data);
+  });
+});
+
+update_btn.addEventListener("click", function() {
+  update(ref(database, "users/" + username_input.value), {
+    userfavor: user_favor_input.value
   })
-})
+});
