@@ -1,6 +1,15 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, set, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import {
+  get,
+  getDatabase,
+  set,
+  ref,
+  onValue,
+  update,
+  remove,
+  child,
+} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,30 +29,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase();
 
-let username_input = document.getElementById("user_name");
-let userage_input = document.getElementById("user_age");
+let user_name_input = document.getElementById("user_name");
+let user_age_input = document.getElementById("user_age");
 let user_favor_input = document.getElementById("user_favor");
 let add_user_btn = document.getElementById("add_user");
 let read_data = document.getElementById("read_data");
 let update_btn = document.getElementById("update");
+let delete_btn = document.getElementById("delete");
 
-add_user_btn.addEventListener("click", function() {
-  set(ref(database, "users/" + username_input.value), {
-    username: userage_input.value,
-    userage: userage_input.value,
+// Create
+add_user_btn.addEventListener("click", function () {
+  // let userRef = ref(database, "users/" + user_name_input.value);
+
+  const dbRef = ref(getDatabase());
+
+  get(child(dbRef, `users/${user_name_input.value}`)).then((snapshot) => {
+    // nếu tên người dùng bạn nhập trùng với tên có rồi trong firebase thì snap.exists() == true
+    // => Lúc này mình thể add 1 user có tên như vậy nữa
+    // nếu tên người dùng bạn nhập trùng ko với tên có rồi trong firebase thì snap.exists() == false
+    // => Cho phép user đó đc add vào trong firebase
+    if (snapshot.exists() == false) {
+      set(ref(database, "users/" + user_name_input.value), {
+        username: user_name_input.value,
+        userage: user_age_input.value,
+      });
+
+      alert("Tạo tài khoản thành công");
+    } else {
+      alert("Tên này đã được sử dụng, vui lòng nhập tên khác");
+      // alert(snapshot.val());
+    }
   });
-
 });
 
-read_data.addEventListener("click", function() {
-  onValue(ref(database, "users/"), (snap) => {
+// Read
+read_data.addEventListener("click", function () {
+  onValue(ref(database, "users"), (snap) => {
     let data = snap.val();
     console.log(data);
   });
 });
 
-update_btn.addEventListener("click", function() {
-  update(ref(database, "users/" + username_input.value), {
-    userfavor: user_favor_input.value
-  })
+// Update
+update_btn.addEventListener("click", function () {
+  update(ref(database, "users/" + user_name_input.value), {
+    userfavor: user_favor_input.value,
+  });
+});
+
+// Delete
+delete_btn.addEventListener("click", function () {
+  remove(ref(database, "users/" + user_name_input.value));
 });
