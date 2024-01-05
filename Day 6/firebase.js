@@ -1,10 +1,16 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
 import {
+  getStorage,
+  uploadBytes,
+  getDownloadURL,
+  ref,
+} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
+import {
   get,
   getDatabase,
   set,
-  ref,
+  ref as dbRef,
   onValue,
   update,
   remove,
@@ -13,11 +19,13 @@ import {
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyD4Jgpg4yIcv_xPAg_h_QPtj9_oWMysen8",
   authDomain: "jsi23-c9b68.firebaseapp.com",
+  databaseURL: "https://jsi23-c9b68-default-rtdb.firebaseio.com",
   projectId: "jsi23-c9b68",
   storageBucket: "jsi23-c9b68.appspot.com",
   messagingSenderId: "669316761403",
@@ -27,8 +35,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const database = getDatabase();
-
+const storage = getStorage(app);
+const database = getDatabase(app);
 let user_name_input = document.getElementById("user_name");
 let user_age_input = document.getElementById("user_age");
 let user_favor_input = document.getElementById("user_favor");
@@ -80,4 +88,38 @@ update_btn.addEventListener("click", function () {
 // Delete
 delete_btn.addEventListener("click", function () {
   remove(ref(database, "users/" + user_name_input.value));
+});
+
+////////////////////////////////////////////////////////// upload image
+// upload image
+const fileInput = document.getElementById("fileInput"); // Input element for file selection
+const imageGallery = document.getElementById("imageGallery"); // Container for displaying images
+var file = "";
+
+fileInput.addEventListener("change", async function (e) {
+  file = e.target.files[0]; // Get the selected file
+});
+
+let upload_image_btn = document.getElementById("uploadImage");
+upload_image_btn.addEventListener("click", async function () {
+  // Create a storage reference
+  const storageRef = ref(storage, "images/" + file.name);
+
+  try {
+    // Upload file to Firebase Storage
+    const snapshot = await uploadBytes(storageRef, file);
+
+    // Get the download URL after successful upload
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    console.log(downloadURL);
+
+    // Store downloadURL in Firebase Database for retrieval
+    const dbImagesRef = dbRef(database, "images");
+    push(dbImagesRef, {
+      imageURL: downloadURL,
+    });
+  } catch (error) {
+    // Handle any errors while uploading
+    console.error(error);
+  }
 });
