@@ -4,13 +4,13 @@ import {
   getStorage,
   uploadBytes,
   getDownloadURL,
-  ref,
+  ref as dbRefImage,
 } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
 import {
   get,
   getDatabase,
   set,
-  ref as dbRef,
+  ref,
   onValue,
   update,
   remove,
@@ -37,6 +37,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const database = getDatabase(app);
+
 let user_name_input = document.getElementById("user_name");
 let user_age_input = document.getElementById("user_age");
 let user_favor_input = document.getElementById("user_favor");
@@ -90,20 +91,16 @@ delete_btn.addEventListener("click", function () {
   remove(ref(database, "users/" + user_name_input.value));
 });
 
-////////////////////////////////////////////////////////// upload image
 // upload image
+
 const fileInput = document.getElementById("fileInput"); // Input element for file selection
 const imageGallery = document.getElementById("imageGallery"); // Container for displaying images
-var file = "";
 
 fileInput.addEventListener("change", async function (e) {
-  file = e.target.files[0]; // Get the selected file
-});
+  const file = e.target.files[0]; // Get the selected file
 
-let upload_image_btn = document.getElementById("uploadImage");
-upload_image_btn.addEventListener("click", async function () {
   // Create a storage reference
-  const storageRef = ref(storage, "images/" + file.name);
+  const storageRef = dbRefImage(storage, "images/" + file.name);
 
   try {
     // Upload file to Firebase Storage
@@ -114,7 +111,7 @@ upload_image_btn.addEventListener("click", async function () {
     console.log(downloadURL);
 
     // Store downloadURL in Firebase Database for retrieval
-    const dbImagesRef = dbRef(database, "images");
+    const dbImagesRef = ref(database, "images");
     push(dbImagesRef, {
       imageURL: downloadURL,
     });
