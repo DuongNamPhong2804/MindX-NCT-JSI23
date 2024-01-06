@@ -126,3 +126,14 @@ update_btn.addEventListener("click", function () {
 delete_btn.addEventListener("click", function () {
   remove(ref(database, "users/" + user_name_input.value));
 });
+
+read_data.addEventListener("click", function () {
+  onValue(ref(database, `users/${user_name_input.value}`), (snap) => {
+    let data = snap.val();
+    if (data && data.user_avatar) {
+      let img = document.createElement("img");
+      img.src = data.user_avatar;
+      imageGallery.appendChild(img);
+    }
+  });
+});
