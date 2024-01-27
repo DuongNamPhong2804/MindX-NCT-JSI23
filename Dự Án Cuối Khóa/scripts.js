@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const memoryGame = document.getElementById('memory-game');
   let flippedCards = [];
   let revealCount = 0;
+  let totalRevealLimit = 20;
 
   shuffledColors.forEach((color, index) => {
     const card = document.createElement('div');
@@ -13,13 +14,18 @@ document.addEventListener('DOMContentLoaded', function () {
     card.dataset.color = color;
     card.addEventListener('click', flipCard);
     memoryGame.appendChild(card);
+
+    card.style.width = `${(700 - 20 * 7) / 8}px`;
+    card.style.height = `${(700 - 20 * 7) / 8}px`;
   });
 
-  // Thêm nút revealAllBtn
   const revealAllBtn = document.getElementById('revealAllBtn');
+  const revealCountDisplay = document.getElementById('revealCountDisplay');
+
   revealAllBtn.addEventListener('click', function () {
-    if (revealCount < 2) {
+    if (revealCount < totalRevealLimit) {
       revealCount++;
+      revealCountDisplay.textContent = `Remaining Reveals: ${totalRevealLimit - revealCount}`;
       document.querySelectorAll('.card:not(.flipped)').forEach(card => {
         card.style.backgroundColor = card.dataset.color;
         card.classList.add('flipped');
@@ -29,7 +35,12 @@ document.addEventListener('DOMContentLoaded', function () {
           card.style.backgroundColor = '#ccc';
           card.classList.remove('flipped');
         });
-      }, 10000);
+      }, 5000);
+    }
+
+    if (revealCount === totalRevealLimit) {
+      revealAllBtn.style.display = 'none';
+      revealCountDisplay.style.display = 'none';
     }
   });
 
